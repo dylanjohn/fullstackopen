@@ -43,7 +43,6 @@ const App = () => {
 
   return (
     <div>
-      {/* <p>Number of exercises {exercises1 + exercises2 + exercises3}</p> */}
       <Header course={course.name} />
       <Course parts={course.parts} />
     </div>
