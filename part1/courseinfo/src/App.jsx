@@ -19,8 +19,8 @@ const Course = ({ parts }) => {
       <Part part={parts[1]} />
       <Part part={parts[2]} />
     </div>
-  );
-};
+  )
+}
 
 const App = () => {
   const course = {
