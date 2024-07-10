@@ -1,16 +1,23 @@
-import { useState } from 'react'
-import Person from './components/Person'
+import { useState, useEffect } from 'react'
+import Persons from './components/Persons'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import personService from './services/persons'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
-
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [filterName, setFilterName] = useState('')
+
+  useEffect(() => {
+      personService
+        .getAll()
+        .then(initialPersons => {
+          setPersons(initialPersons)
+        })
+  }, [])
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -18,19 +25,41 @@ const App = () => {
     const nameExists = persons.some(person => person.name === newName)
 
     if (nameExists) {
-      alert(newName + ' is already added to phonebook')
+      alert(`${newName} is already added to phonebook`)
       return
     }
 
     const nameObject = {
-      id: persons.length + 1,
       name: newName,
       number: newNumber
     }
 
-    setPersons(persons.concat(nameObject))
-    setNewName('')
-    setNewNumber('')
+    personService
+      .create(nameObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+    })
+  }
+  
+  const filteredPersons = persons.filter(person =>
+    person.name.includes(filterName)
+  )
+
+  const handleRemovePerson = id => {
+    const person = persons.find(p => p.id === id)
+
+    if (window.confirm(`Are you sure you want to delete ${person.name}?`)) {
+      personService
+      .deleteResource(id)
+      .then(() => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+      .catch(error => {
+        alert(`Failed to remove ${person.name}`)
+     })
+    }
   }
 
   const handleNameChange = (event) => {
@@ -41,33 +70,33 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const handleFilterChange = (event) => {
+    setFilterName(event.target.value)
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name:
-          <input 
-            value={newName}
-            onChange={handleNameChange} />
-        </div>
-        <div>
-          number:
-          <input 
-            value={newNumber}
-            onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      
+      <Filter 
+        filterName={filterName}
+        handleFilterChange={handleFilterChange} 
+      />
+
+      <h2>add a new</h2>
+      <PersonForm 
+        newNumber={newNumber} 
+        newName={newName} 
+        addPerson={addPerson} 
+        handleNameChange={handleNameChange} 
+        handleNumberChange={handleNumberChange} 
+      />
 
       <h2>Numbers</h2>
-      <ul>
-        {persons.map(person =>
-          <Person key={person.id} person={person} />
-        )}
-      </ul>
+      <Persons 
+        handleRemove={handleRemovePerson}
+        filteredPersons={filteredPersons}
+        />
     </div>
   )
 }
