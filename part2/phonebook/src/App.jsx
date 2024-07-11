@@ -22,25 +22,43 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
-    const nameExists = persons.some(person => person.name === newName)
+    const existingUser = persons.find(person => person.name === newName)
 
-    if (nameExists) {
-      alert(`${newName} is already added to phonebook`)
-      return
+    if (existingUser) {
+      //alert(`${newName} is already added to phonebook`)
+      const updatedPerson = { ...existingUser, number: newNumber }
+
+      if (window.confirm(`Are you sure you want to update ${existingUser.name}?`)) {
+        personService
+        .update(existingUser.id, updatedPerson)
+        .then(returnedPerson => {
+            setPersons(persons.map(person =>
+                person.id !== existingUser.id ? person : returnedPerson
+            ));
+            setNewName('')
+            setNewNumber('')
+        })
+        .catch(error => {
+            alert(`Failed to update ${newName}: ${error.message}`)
+        })
+      }
+    } else {
+      const nameObject = {
+        name: newName,
+        number: newNumber
+      }
+  
+      personService
+        .create(nameObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(error => {
+          alert(`Failed to add ${newName}: ${error.message}`);
+        })
     }
-
-    const nameObject = {
-      name: newName,
-      number: newNumber
-    }
-
-    personService
-      .create(nameObject)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
-    })
   }
   
   const filteredPersons = persons.filter(person =>
