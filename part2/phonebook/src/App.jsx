@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
-import Persons from './components/Persons'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
+import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import personService from './services/persons'
-import axios from 'axios'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
       personService
@@ -25,22 +28,33 @@ const App = () => {
     const existingUser = persons.find(person => person.name === newName)
 
     if (existingUser) {
-      //alert(`${newName} is already added to phonebook`)
       const updatedPerson = { ...existingUser, number: newNumber }
 
       if (window.confirm(`Are you sure you want to update ${existingUser.name}?`)) {
         personService
-        .update(existingUser.id, updatedPerson)
-        .then(returnedPerson => {
-            setPersons(persons.map(person =>
-                person.id !== existingUser.id ? person : returnedPerson
-            ));
-            setNewName('')
-            setNewNumber('')
-        })
-        .catch(error => {
-            alert(`Failed to update ${newName}: ${error.message}`)
-        })
+          .update(existingUser.id, updatedPerson)
+          .then(returnedPerson => {
+              setPersons(persons.map(person =>
+                  person.id !== existingUser.id ? person : returnedPerson
+              ));
+              setNewName('')
+              setNewNumber('')
+              setSuccessMessage(
+                `${existingUser.name} was updated on the server`
+              ) 
+              setTimeout(() => {
+                setSuccessMessage(null)
+              }, 5000)
+          })
+          .catch(error => {
+              // alert(`Failed to update ${existingUser.name}: ${error.message}`)
+              setErrorMessage(
+                `Failed to update ${existingUser.name}: ${error.message}`
+              ) 
+              setTimeout(() => {
+                setErrorMessage(null)
+              }, 5000)
+          })
       }
     } else {
       const nameObject = {
@@ -54,6 +68,12 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setSuccessMessage(
+            `Added ${newName}`
+          ) 
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
         .catch(error => {
           alert(`Failed to add ${newName}: ${error.message}`);
@@ -95,7 +115,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      
+      <Notification errorMessage={errorMessage} successMessage={successMessage}/>
       <Filter 
         filterName={filterName}
         handleFilterChange={handleFilterChange} 
