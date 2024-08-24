@@ -76,7 +76,14 @@ const App = () => {
           }, 5000)
         })
         .catch(error => {
-          alert(`Failed to add ${newName}: ${error.message}`);
+          if (error.response && error.response.data && error.response.data.error) {
+            setErrorMessage(error.response.data.error)
+          } else {
+            setErrorMessage(`Failed to add ${newName}: ${error.message}`)
+          }
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
   }
