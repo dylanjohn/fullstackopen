@@ -1,0 +1,2 @@
+// requests/get_all_blogs.rest
+GET http://localhost:3001/api/blogs

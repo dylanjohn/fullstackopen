@@ -1,0 +1,11 @@
+###
+// requests/create_blog.rest
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Sample Title",
+  "author": "Sample Author",
+  "url": "http://sample-url.com",
+  "likes": 0
+}
