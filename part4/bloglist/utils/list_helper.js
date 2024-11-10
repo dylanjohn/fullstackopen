@@ -34,7 +34,6 @@ const mostBlogs = (blogs) => {
   let topAuthor = ''
 
   for (const [author, count] of Object.entries(authorCounts)) {
-    console.log(count, author)
     if (count > maxBlogs) {
       maxBlogs = count
       topAuthor = author
