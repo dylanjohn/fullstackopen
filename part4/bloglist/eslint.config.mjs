@@ -5,14 +5,7 @@ import stylisticJs from '@stylistic/eslint-plugin-js'
 export default [
   js.configs.recommended,
   { 
-    ignores: [
-      "dist/**",
-      "build/**",
-      "node_modules/**",
-      "coverage/**",
-      ".env",
-      "*.log",
-    ],
+    ignores: ["dist/**", "build/**"],
   },
   {
     files: ["**/*.js"],
