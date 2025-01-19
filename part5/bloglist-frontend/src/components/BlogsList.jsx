@@ -1,12 +1,12 @@
 import Blog from './Blog'
 
-const BlogsList = ({ blogs, user, handleLike }) => {
+const BlogsList = ({ blogs, user, handleLike, handleDelete }) => {
 
-  const filteredBlogs = blogs.filter(blog => 
+  const filteredBlogs = blogs.filter(blog =>
     blog.user && blog.user.username === user.username
   )
 
-  const sortedBlogs = filteredBlogs.sort((a, b) => 
+  const sortedBlogs = filteredBlogs.sort((a, b) =>
     (b.likes || 0) - (a.likes || 0)
   )
 
@@ -16,13 +16,14 @@ const BlogsList = ({ blogs, user, handleLike }) => {
 
   return (
     sortedBlogs.map(blog =>
-      <Blog 
-        key={blog.id} 
-        blog={blog} 
+      <Blog
+        key={blog.id}
+        blog={blog}
         handleLike={handleLike}
+        handleDelete={handleDelete}
       />
     )
   )
 }
-  
-  export default BlogsList
+
+export default BlogsList
