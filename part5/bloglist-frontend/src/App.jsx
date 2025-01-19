@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import BlogsList from './components/BlogsList'
+import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -11,9 +13,6 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
 
@@ -83,27 +82,9 @@ const App = () => {
     </form>      
   )
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
-
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
-  }
-
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
-  }
-
-  const addBlog = (event) => {
-    event.preventDefault()
-    
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
-    }
+  const blogFormRef = useRef()
   
+  const addBlog = (blogObject) => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
@@ -116,13 +97,10 @@ const App = () => {
           }
         }
         setBlogs(blogs.concat(blogWithUser))
-        setSuccessMessage(`A new blog ${title} by ${author} was added`)
+        setSuccessMessage(`A new blog ${blogObject.title} by ${blogObject.author} was added`)
         setTimeout(() => {
           setSuccessMessage(null)
         }, 5000)
-        setTitle('')
-        setAuthor('')
-        setUrl('')
       })
       .catch(error => {
         console.error('Error creating blog:', error)
@@ -131,6 +109,43 @@ const App = () => {
           setErrorMessage(null)
         }, 5000)
       })
+  }
+
+  const handleLike = async (blog) => {
+    const updatedBlog = {
+      user: blog.user.id,
+      likes: (blog.likes || 0) + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }
+  
+    try {
+      const returnedBlog = await blogService.update(blog.id, updatedBlog)
+      
+      // Create new array of blogs
+      const updatedBlogs = blogs.map(currentBlog => {
+        // If not blog we're updating, keep it as is
+        if (currentBlog.id !== blog.id) {
+          return currentBlog
+        }
+        
+        // If this is the blog we're updating, return the updated version
+        // Keep original user object
+        return {
+          ...returnedBlog,
+          user: blog.user
+        }
+      })
+  
+      // Update the state with our new array
+      setBlogs(updatedBlogs)
+    } catch (error) {
+      setErrorMessage('Failed to update likes')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
   }
 
   return (
@@ -152,25 +167,16 @@ const App = () => {
           </div>
 
           <h2>create new</h2>
+          
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
 
-          <BlogForm 
-            title={title}
-            author={author}
-            url={url}
-            handleSubmit={addBlog}
-            handleTitleChange={handleTitleChange}
-            handleAuthorChange={handleAuthorChange}
-            handleUrlChange={handleUrlChange}
+          <BlogsList 
+            blogs={blogs} 
+            user={user} 
+            handleLike={handleLike}
           />
-
-          {(() => {
-            const userBlogs = blogs.filter(blog => 
-              blog.user && blog.user.username === user.username
-            );
-            return userBlogs.length === 0 
-              ? <p>No blogs found</p>
-              : userBlogs.map(blog => <Blog key={blog.id} blog={blog} />)
-          })()}
         </div>
       )}
     </div>
