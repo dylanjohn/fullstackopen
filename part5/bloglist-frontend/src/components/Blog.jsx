@@ -16,7 +16,7 @@ const Blog = ({ blog, user, handleLike, handleDelete }) => {
   const showDeleteButton = blog.user?.username === user?.username
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog-item">
       <div style={hideWhenVisible} className="blog-basic">
         {blog.title} {blog.author}
         <button onClick={() => setVisible(true)}>view</button>
@@ -29,7 +29,7 @@ const Blog = ({ blog, user, handleLike, handleDelete }) => {
           likes {blog.likes || 0}
           <button id="like-button" onClick={() => handleLike(blog)}>like</button>
         </div>
-        <div>{blog.user.name}</div>
+        <div>{blog.user?.name}</div>
         {showDeleteButton && 
           <button onClick={() => handleDelete(blog)}>remove</button>
         }

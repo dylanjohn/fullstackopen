@@ -165,7 +165,7 @@ const App = () => {
               window.localStorage.removeItem('loggedBlogappUser')
               setUser(null)
             }}>
-              Logout
+              logout
             </button>
           </div>
 

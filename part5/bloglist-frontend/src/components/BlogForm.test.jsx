@@ -9,9 +9,9 @@ test('<BlogForm /> calls event handler with right details', async () => {
 
   const { container } = render(<BlogForm createBlog={createBlog} />)
 
-  const titleInput = container.querySelector('#title-input')
-  const authorInput = container.querySelector('#author-input')
-  const urlInput = container.querySelector('#url-input')
+  const titleInput = container.querySelector('#title')
+  const authorInput = container.querySelector('#author')
+  const urlInput = container.querySelector('#url')
   const sendButton = screen.getByText('create')
 
   await user.type(titleInput, 'testing a blog...')
