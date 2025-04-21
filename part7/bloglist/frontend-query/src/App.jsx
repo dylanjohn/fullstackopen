@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
 import BlogsList from './components/BlogsList';
@@ -8,6 +10,8 @@ import blogService from './services/blogs';
 import loginService from './services/login';
 import './index.css';
 
+import { useNotification } from './contexts/NotificationContext';
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
@@ -15,6 +19,9 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+
+  const queryClient = useQueryClient();
+  const { notification, setNotification } = useNotification();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -43,7 +50,7 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
-      setSuccessMessage(`Welcome back ${user.name}!`);
+      setNotification(`Welcome back ${user.name}!`, 'success');
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
@@ -144,10 +151,7 @@ const App = () => {
   return (
     <div>
       <h2>{!user ? 'login to application' : 'blogs'}</h2>
-      <Notification
-        errorMessage={errorMessage}
-        successMessage={successMessage}
-      />
+      <Notification />
 
       {!user && (
         <LoginForm

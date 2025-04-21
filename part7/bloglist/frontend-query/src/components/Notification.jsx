@@ -1,13 +1,17 @@
-const Notification = ({ errorMessage, successMessage }) => {
-  if (errorMessage === null && successMessage === null) {
+import React from 'react';
+import { useNotification } from '../contexts/NotificationContext';
+
+const Notification = () => {
+  const { notification } = useNotification();
+
+  if (!notification) {
     return null;
   }
 
   return (
-    <>
-      {errorMessage && <div className="error">{errorMessage}</div>}
-      {successMessage && <div className="success">{successMessage}</div>}
-    </>
+    <div className={`notification ${notification.type}`}>
+      {notification.message}
+    </div>
   );
 };
 
