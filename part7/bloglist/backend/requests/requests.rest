@@ -1,0 +1,51 @@
+### Login requests
+POST http://localhost:3001/api/login/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "root4",
+    "password": "salainen"
+}
+
+###
+# Save the token from above response and use it in below requests
+@authToken = Bearer eyJhbGciO...
+
+### Get all users
+GET http://localhost:3001/api/users
+
+### Create a new user
+POST http://localhost:3001/api/users/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "root1",
+    "name": "Superuser",
+    "password": "salainen"
+}
+
+###  Get all blogs
+GET http://localhost:3001/api/blogs
+
+
+### Create a blog
+POST http://localhost:3001/api/blogs/ HTTP/1.1
+content-type: application/json
+Authorization: {{authToken}}
+
+{
+  "title": "My First Blog",
+  "author": "John Doe",
+  "url": "http://example.com",
+  "likes": 0
+}
+
+###
+# Then delete the blog (replace the ID with the one you got from the POST response)
+DELETE http://localhost:3001/api/blogs/[BLOG_ID_HERE]
+Authorization: {{authToken}}
+
+###
+# Try to delete with wrong token (should fail)
+DELETE http://localhost:3001/api/blogs/[BLOG_ID_HERE]
+Authorization: {{authToken}}
