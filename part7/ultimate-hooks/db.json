@@ -7,30 +7,6 @@
     {
       "id": 2,
       "content": "best feature ever <3"
-    },
-    {
-      "content": "Yo yo",
-      "id": 3
-    },
-    {
-      "content": "react ftw",
-      "id": 4
-    },
-    {
-      "content": "react is great",
-      "id": 5
-    },
-    {
-      "content": "dddd",
-      "id": 6
-    },
-    {
-      "content": "ddd",
-      "id": 7
-    },
-    {
-      "content": "ssss",
-      "id": 8
     }
   ],
   "persons": [
@@ -43,26 +19,6 @@
       "id": 2,
       "name": "hellas",
       "number": "012-123123"
-    },
-    {
-      "name": "dddd",
-      "number": "ssss",
-      "id": 3
-    },
-    {
-      "name": "ddds",
-      "number": "ssss",
-      "id": 4
-    },
-    {
-      "name": "s",
-      "number": "ssss",
-      "id": 5
-    },
-    {
-      "name": "ssss",
-      "number": "ssss",
-      "id": 6
     }
   ]
 }
