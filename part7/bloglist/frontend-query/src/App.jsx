@@ -11,89 +11,81 @@ import loginService from './services/login';
 import './index.css';
 
 import { useNotification } from './contexts/NotificationContext';
+import { useAuth } from './contexts/UserContext';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const blogFormRef = useRef();
 
   const queryClient = useQueryClient();
   const { notification, setNotification } = useNotification();
+  const { user, login, logout } = useAuth();
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    retry: 1
+  });
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+  const createBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      setNotification(`A new blog ${newBlog.title} by ${newBlog.author} was added`, 'success');
+      if (blogFormRef.current) {
+        blogFormRef.current.toggleVisibility();
+      }
+    },
+    onError: (error) => {
+      setNotification('Failed to create blog', 'error');
     }
-  }, []);
+  });
+
+  const updateBlogMutation = useMutation({
+    mutationFn: ({ id, updatedBlog }) => blogService.update(id, updatedBlog),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+    },
+    onError: () => {
+      setNotification('Failed to update likes', 'error');
+    }
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: (id) => blogService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      setNotification('Blog was successfully deleted', 'success');
+    },
+    onError: () => {
+      setNotification('Failed to delete blog', 'error');
+    }
+  });
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
+  
     try {
       const user = await loginService.login({
         username,
         password,
       });
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
+  
+      login(user); // This handles localStorage and token setting
       setUsername('');
       setPassword('');
       setNotification(`Welcome back ${user.name}!`, 'success');
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
     } catch (exception) {
-      setErrorMessage('Invalid username or password. Please try again.');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      setNotification('Invalid username or password. Please try again.', 'error');
     }
   };
 
-  const blogFormRef = useRef();
-
   const addBlog = (blogObject) => {
-    blogService
-      .create(blogObject)
-      .then((returnedBlog) => {
-        const blogWithUser = {
-          ...returnedBlog,
-          user: {
-            username: user.username,
-            name: user.name,
-            id: user.id,
-          },
-        };
-        setBlogs(blogs.concat(blogWithUser));
-        setSuccessMessage(
-          `A new blog ${blogObject.title} by ${blogObject.author} was added`
-        );
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 5000);
-      })
-      .catch((error) => {
-        console.error('Error creating blog:', error);
-        setErrorMessage('Failed to create blog');
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-      });
+    createBlogMutation.mutate(blogObject);
   };
 
-  const handleLike = async (blog) => {
+  const handleLike = (blog) => {
     const updatedBlog = {
       user: blog.user.id,
       likes: (blog.likes || 0) + 1,
@@ -101,52 +93,26 @@ const App = () => {
       title: blog.title,
       url: blog.url,
     };
-
-    try {
-      const returnedBlog = await blogService.update(blog.id, updatedBlog);
-
-      // Create new array of blogs
-      const updatedBlogs = blogs.map((currentBlog) => {
-        // If not updating, keep it as is
-        if (currentBlog.id !== blog.id) {
-          return currentBlog;
-        }
-
-        // If updating, return the updated version
-        // Keep original user object
-        return {
-          ...returnedBlog,
-          user: blog.user,
-        };
-      });
-
-      // Update the state with our new array
-      setBlogs(updatedBlogs);
-    } catch (error) {
-      setErrorMessage('Failed to update likes');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    }
+    
+    updateBlogMutation.mutate({ 
+      id: blog.id, 
+      updatedBlog 
+    });
   };
-
-  const handleDelete = async (blog) => {
+  
+  const handleDelete = (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      try {
-        await blogService.remove(blog.id);
-        setBlogs(blogs.filter((b) => b.id !== blog.id));
-        setSuccessMessage(`Blog '${blog.title}' was successfully deleted`);
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 5000);
-      } catch (error) {
-        setErrorMessage('Failed to delete blog');
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-      }
+      deleteBlogMutation.mutate(blog.id);
     }
   };
+
+  if (result.isLoading) {
+    return <div>Loading blogs...</div>;
+  }
+  
+  if (result.isError) {
+    return <div>Error loading blogs: {result.error.message}</div>;
+  }
 
   return (
     <div>
@@ -169,12 +135,12 @@ const App = () => {
             <span>{user.name} logged in</span>{' '}
             <button
               onClick={() => {
-                window.localStorage.removeItem('loggedBlogappUser');
-                setUser(null);
+                logout();
+                setNotification('Logged out successfully', 'info');
               }}
             >
               logout
-            </button>
+          </button>
           </div>
 
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
@@ -182,7 +148,7 @@ const App = () => {
           </Togglable>
 
           <BlogsList
-            blogs={blogs}
+            blogs={result.data || []}
             user={user}
             handleLike={handleLike}
             handleDelete={handleDelete}
