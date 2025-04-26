@@ -1,5 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
+import {
+  Routes,
+  Route,
+  Link,
+  Navigate
+} from "react-router";
 
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
@@ -12,6 +18,32 @@ import './index.css';
 
 import { useNotification } from './contexts/NotificationContext';
 import { useAuth } from './contexts/UserContext';
+
+const Home = ({ blogs, user, blogFormRef, addBlog, handleLike, handleDelete }) => {
+  return (
+    <div>
+      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+        <BlogForm createBlog={addBlog} />
+      </Togglable>
+
+      <BlogsList
+        blogs={blogs}
+        user={user}
+        handleLike={handleLike}
+        handleDelete={handleDelete}
+      />
+    </div>
+  );
+};
+
+const Users = () => {
+  return (
+    <div>
+      <h2>Users</h2>
+      <p>This will be the users view</p>
+    </div>
+  );
+};
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -72,7 +104,7 @@ const App = () => {
         password,
       });
   
-      login(user); // This handles localStorage and token setting
+      login(user);
       setUsername('');
       setPassword('');
       setNotification(`Welcome back ${user.name}!`, 'success');
@@ -113,13 +145,13 @@ const App = () => {
   if (result.isError) {
     return <div>Error loading blogs: {result.error.message}</div>;
   }
-
+  
   return (
     <div>
       <h2>{!user ? 'login to application' : 'blogs'}</h2>
       <Notification />
 
-      {!user && (
+      {!user ? (
         <LoginForm
           username={username}
           password={password}
@@ -127,32 +159,37 @@ const App = () => {
           handlePasswordChange={({ target }) => setPassword(target.value)}
           handleSubmit={handleLogin}
         />
-      )}
-
-      {user && (
+      ) : (
         <div>
           <div>
-            <span>{user.name} logged in</span>{' '}
-            <button
-              onClick={() => {
-                logout();
-                setNotification('Logged out successfully', 'info');
-              }}
-            >
-              logout
-          </button>
+            <nav>
+              <Link to="/">blogs</Link>{' '}
+              <Link to="/users">users</Link>{' '}
+              <span>{user.name} logged in</span>{' '}
+              <button
+                onClick={() => {
+                  logout();
+                  setNotification('Logged out successfully', 'info');
+                }}
+              >
+                logout
+              </button>
+            </nav>
           </div>
 
-          <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-            <BlogForm createBlog={addBlog} />
-          </Togglable>
-
-          <BlogsList
-            blogs={result.data || []}
-            user={user}
-            handleLike={handleLike}
-            handleDelete={handleDelete}
-          />
+          <Routes>
+            <Route path="/" element={
+              <Home 
+                blogs={result.data || []}
+                user={user}
+                blogFormRef={blogFormRef}
+                addBlog={addBlog}
+                handleLike={handleLike}
+                handleDelete={handleDelete}
+              />
+            } />
+            <Route path="/users" element={<Users />} />
+          </Routes>
         </div>
       )}
     </div>
