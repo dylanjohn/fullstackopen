@@ -9,7 +9,7 @@ content-type: application/json
 
 ###
 # Save the token from above response and use it in below requests
-@authToken = Bearer eyJhbGciO...
+@authToken = eyJhbGciOi..
 
 ### Get all users
 GET http://localhost:3001/api/users
@@ -49,3 +49,12 @@ Authorization: {{authToken}}
 # Try to delete with wrong token (should fail)
 DELETE http://localhost:3001/api/blogs/[BLOG_ID_HERE]
 Authorization: {{authToken}}
+
+### Add a comment to a blog post
+POST http://localhost:3001/api/blogs/678cc43ec1eed2f8c77e1dca/comments
+Content-Type: application/json
+Authorization: {{authToken}}
+
+{
+  "comment": "This is a great blog post!"
+}

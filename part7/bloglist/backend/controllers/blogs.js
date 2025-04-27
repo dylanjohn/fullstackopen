@@ -41,6 +41,38 @@ blogsRouter.post('/', userExtractor, async (request, response, next) => {
   response.status(201).json(savedBlog)
 })
 
+blogsRouter.post('/:id/comments', async (request, response, next) => {
+  try {
+    const { comment } = request.body
+
+    if (!comment) {
+      return response.status(400).json({ error: 'comment content is missing' })
+    }
+
+    const blog = await Blog.findById(request.params.id)
+
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' })
+    }
+
+    if (!blog.comments) {
+      blog.comments = []
+    }
+
+    blog.comments.push(comment)
+
+    const updatedBlog = await blog.save()
+
+    const populatedBlog = await Blog
+      .findById(updatedBlog._id)
+      .populate('user', { username: 1, name: 1 })
+
+    response.json(populatedBlog)
+  } catch (error) {
+    next(error)
+  }
+})
+
 blogsRouter.get('/:id', async (request, response, next) => {
   try {
     const blog = await Blog
