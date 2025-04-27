@@ -4,46 +4,20 @@ import {
   Routes,
   Route,
   Link,
-  Navigate
 } from "react-router";
 
 import LoginForm from './components/LoginForm';
-import BlogForm from './components/BlogForm';
-import BlogsList from './components/BlogsList';
-import Togglable from './components/Togglable';
+import Home from './components/Home';
 import Notification from './components/Notification';
 import blogService from './services/blogs';
 import loginService from './services/login';
+import UsersList from './components/UsersList';
+import UserDetail from './components/UserDetail';
+import BlogDetail from './components/BlogDetail';
 import './index.css';
 
 import { useNotification } from './contexts/NotificationContext';
 import { useAuth } from './contexts/UserContext';
-
-const Home = ({ blogs, user, blogFormRef, addBlog, handleLike, handleDelete }) => {
-  return (
-    <div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
-
-      <BlogsList
-        blogs={blogs}
-        user={user}
-        handleLike={handleLike}
-        handleDelete={handleDelete}
-      />
-    </div>
-  );
-};
-
-const Users = () => {
-  return (
-    <div>
-      <h2>Users</h2>
-      <p>This will be the users view</p>
-    </div>
-  );
-};
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -53,12 +27,6 @@ const App = () => {
   const queryClient = useQueryClient();
   const { notification, setNotification } = useNotification();
   const { user, login, logout } = useAuth();
-
-  const result = useQuery({
-    queryKey: ['blogs'],
-    queryFn: blogService.getAll,
-    retry: 1
-  });
 
   const createBlogMutation = useMutation({
     mutationFn: blogService.create,
@@ -138,14 +106,6 @@ const App = () => {
     }
   };
 
-  if (result.isLoading) {
-    return <div>Loading blogs...</div>;
-  }
-  
-  if (result.isError) {
-    return <div>Error loading blogs: {result.error.message}</div>;
-  }
-  
   return (
     <div>
       <h2>{!user ? 'login to application' : 'blogs'}</h2>
@@ -161,11 +121,18 @@ const App = () => {
         />
       ) : (
         <div>
-          <div>
-            <nav>
-              <Link to="/">blogs</Link>{' '}
-              <Link to="/users">users</Link>{' '}
-              <span>{user.name} logged in</span>{' '}
+          <nav
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '15px',
+            }}
+          >
+            <span>
+              <Link to="/">blogs</Link> <Link to="/users">users</Link>{' '}
+            </span>
+            <span>{user.name} logged in </span>
+            <div>
               <button
                 onClick={() => {
                   logout();
@@ -174,21 +141,34 @@ const App = () => {
               >
                 logout
               </button>
-            </nav>
-          </div>
+            </div>
+          </nav>
 
           <Routes>
-            <Route path="/" element={
-              <Home 
-                blogs={result.data || []}
-                user={user}
-                blogFormRef={blogFormRef}
-                addBlog={addBlog}
-                handleLike={handleLike}
-                handleDelete={handleDelete}
-              />
-            } />
-            <Route path="/users" element={<Users />} />
+            <Route
+              path="/"
+              element={
+                <Home
+                  user={user}
+                  blogFormRef={blogFormRef}
+                  addBlog={addBlog}
+                  handleLike={handleLike}
+                  handleDelete={handleDelete}
+                />
+              }
+            />
+            <Route path="/users" element={<UsersList />} />
+            <Route path="/users/:id" element={<UserDetail />} />
+            <Route 
+              path="/blogs/:id" 
+              element={
+                <BlogDetail 
+                  handleLike={handleLike} 
+                  handleDelete={handleDelete}
+                  user={user}
+                />
+              } 
+            />
           </Routes>
         </div>
       )}
