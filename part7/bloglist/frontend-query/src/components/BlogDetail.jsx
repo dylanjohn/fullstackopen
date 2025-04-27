@@ -1,14 +1,24 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useQuery } from 'react-query';
 import blogService from '../services/blogs';
 
-const BlogDetail = ({ handleLike, user }) => {
+const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
+  const [comment, setComment] = useState('');
   const { id } = useParams();
   
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll
   });
+
+  const handleCommentSubmit = (event) => {
+    event.preventDefault();
+    if (comment) {
+      handleComment(id, comment);
+      setComment('');
+    }
+  };
 
   if (result.isLoading) {
     return <div>Loading blog details...</div>;
@@ -57,7 +67,28 @@ const BlogDetail = ({ handleLike, user }) => {
       )}
       
       <h3>Comments</h3>
-      <p>No comments yet</p>
+      <form onSubmit={handleCommentSubmit}>
+        <div>
+          <input
+            id="comment"
+            type="text"
+            value={comment}
+            onChange={({ target }) => setComment(target.value)}
+            placeholder="Write your comment here"
+          />
+          <button type="submit">add comment</button>
+        </div>
+      </form>
+      
+      {blog.comments && blog.comments.length > 0 ? (
+        <ul>
+          {blog.comments.map((comment, index) => (
+            <li key={index}>{comment}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No comments yet</p>
+      )}
       
       <div>
         <Link to="/">Back to blogs</Link>

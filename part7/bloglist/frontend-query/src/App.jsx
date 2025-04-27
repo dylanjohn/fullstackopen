@@ -63,6 +63,17 @@ const App = () => {
     }
   });
 
+  const commentBlogMutation = useMutation({
+    mutationFn: ({ id, comment }) => blogService.addComment(id, comment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      setNotification('Comment added successfully', 'success');
+    },
+    onError: () => {
+      setNotification('Failed to add comment', 'error');
+    }
+  });
+
   const handleLogin = async (event) => {
     event.preventDefault();
   
@@ -104,6 +115,10 @@ const App = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       deleteBlogMutation.mutate(blog.id);
     }
+  };
+
+  const handleComment = (id, comment) => {
+    commentBlogMutation.mutate({ id, comment });
   };
 
   return (
@@ -165,6 +180,7 @@ const App = () => {
                 <BlogDetail 
                   handleLike={handleLike} 
                   handleDelete={handleDelete}
+                  handleComment={handleComment}
                   user={user}
                 />
               } 
