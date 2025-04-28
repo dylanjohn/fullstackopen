@@ -15,6 +15,7 @@ import UsersList from './components/UsersList';
 import UserDetail from './components/UserDetail';
 import BlogDetail from './components/BlogDetail';
 import './index.css';
+import { Flex, Button, Text } from '@radix-ui/themes';
 
 import { useNotification } from './contexts/NotificationContext';
 import { useAuth } from './contexts/UserContext';
@@ -136,28 +137,28 @@ const App = () => {
         />
       ) : (
         <div>
-          <nav
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '15px',
-            }}
+          <Flex
+            p="3"
+            justify="between"
+            style={{ borderBottom: '1px solid #eaeaea' }}
           >
-            <span>
-              <Link to="/">blogs</Link> <Link to="/users">users</Link>{' '}
-            </span>
-            <span>{user.name} logged in </span>
-            <div>
-              <button
+            <Flex gap="4">
+              <Link to="/">blogs</Link>
+              <Link to="/users">users</Link>
+            </Flex>
+
+            <Flex align="center" gap="3">
+              <Text>{user.name} logged in</Text>
+              <Button
                 onClick={() => {
                   logout();
                   setNotification('Logged out successfully', 'info');
                 }}
               >
                 logout
-              </button>
-            </div>
-          </nav>
+              </Button>
+            </Flex>
+          </Flex>
 
           <Routes>
             <Route
@@ -174,16 +175,16 @@ const App = () => {
             />
             <Route path="/users" element={<UsersList />} />
             <Route path="/users/:id" element={<UserDetail />} />
-            <Route 
-              path="/blogs/:id" 
+            <Route
+              path="/blogs/:id"
               element={
-                <BlogDetail 
-                  handleLike={handleLike} 
+                <BlogDetail
+                  handleLike={handleLike}
                   handleDelete={handleDelete}
                   handleComment={handleComment}
                   user={user}
                 />
-              } 
+              }
             />
           </Routes>
         </div>
