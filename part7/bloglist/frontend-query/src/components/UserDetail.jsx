@@ -24,7 +24,7 @@ const UserDetail = () => {
     return (
       <div>
         <p>User not found</p>
-        <Link to="/users">Back to users</Link>
+        <Link to="/users">Back</Link>
       </div>
     );
   }
@@ -48,7 +48,7 @@ const UserDetail = () => {
       )}
       
       <div>
-        <Link to="/users">Back to users</Link>
+        <Link to="/users">Back</Link>
       </div>
     </div>
   );

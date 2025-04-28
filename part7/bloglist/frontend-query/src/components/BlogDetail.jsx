@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useNavigate} from 'react-router';
 import { useQuery } from 'react-query';
 import blogService from '../services/blogs';
 
 const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
   const [comment, setComment] = useState('');
   const { id } = useParams();
-  
+  const navigate = useNavigate();
+
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll
   });
+  
 
   const handleCommentSubmit = (event) => {
     event.preventDefault();
@@ -34,7 +36,19 @@ const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
     return (
       <div>
         <p>Blog not found</p>
-        <Link to="/">Back to blogs</Link>
+        <Link
+          to="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (window.history.length > 2) {
+              navigate(-1);
+            } else {
+              navigate('/');
+            }
+          }}
+        >
+          Back
+        </Link>
       </div>
     );
   }
@@ -43,29 +57,29 @@ const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
 
   return (
     <div>
-      <h2>{blog.title} by {blog.author}</h2>
-      
+      <h2>
+        {blog.title} by {blog.author}
+      </h2>
+
       <div>
         <a href={blog.url} target="_blank" rel="noopener noreferrer">
           {blog.url}
         </a>
       </div>
-      
+
       <div>
         {blog.likes || 0} likes
         <button onClick={() => handleLike(blog)}>like</button>
       </div>
-      
-      <div>
-        {blog.user ? `added by ${blog.user.name}` : 'Unknown author'}
-      </div>
-      
+
+      <div>{blog.user ? `added by ${blog.user.name}` : 'Unknown author'}</div>
+
       {showDeleteButton && (
         <div>
           <button onClick={() => handleDelete(blog)}>remove</button>
         </div>
       )}
-      
+
       <h3>Comments</h3>
       <form onSubmit={handleCommentSubmit}>
         <div>
@@ -79,7 +93,7 @@ const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
           <button type="submit">add comment</button>
         </div>
       </form>
-      
+
       {blog.comments && blog.comments.length > 0 ? (
         <ul>
           {blog.comments.map((comment, index) => (
@@ -89,9 +103,21 @@ const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
       ) : (
         <p>No comments yet</p>
       )}
-      
+
       <div>
-        <Link to="/">Back to blogs</Link>
+        <Link
+          to="#"
+          onClick={(e) => {
+            e.preventDefault();
+            if (window.history.length > 2) {
+              navigate(-1);
+            } else {
+              navigate('/');
+            }
+          }}
+        >
+          Back
+        </Link>
       </div>
     </div>
   );
