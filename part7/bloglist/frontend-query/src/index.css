@@ -1,18 +1,87 @@
-.success {
-  color: green;
-  background: lightgrey;
-  font-size: 20px;
-  border: 1px solid green;
-  padding: 10px;
-  margin-bottom: 10px;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-.error {
-  color: red;
-  background: lightgrey;
-  font-size: 20px;
-  border-style: solid;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
+@layer base {
+  :root {
+    --foreground: 240 10% 3.9%;
+    --border: 240 5.9% 90%;
+  }
+  
+  .dark {
+    --foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+  }
+}
+
+/* Notification styles */
+
+.notification {
+  display: flex;
+  align-items: center;
+  max-width: md;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease forwards;
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+}
+
+.notification-message {
+  flex-grow: 1;
+}
+
+/* Success notification */
+.notification-success {
+  background-color: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  color: #15803d;
+}
+
+.notification-success .notification-icon {
+  color: #22c55e;
+}
+
+/* Error notification */
+.notification-error {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+  color: #b91c1c;
+}
+
+.notification-error .notification-icon {
+  color: #ef4444;
+}
+
+/* Info notification */
+.notification-info {
+  background-color: #f0f9ff;
+  border-left: 4px solid #3b82f6;
+  color: #1d4ed8;
+}
+
+.notification-info .notification-icon {
+  color: #3b82f6;
+}
+
+/* Animation for notifications */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

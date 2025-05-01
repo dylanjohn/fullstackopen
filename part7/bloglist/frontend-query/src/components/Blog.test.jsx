@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { test, expect, vi } from 'vitest';
+import { BrowserRouter } from 'react-router';
 import Blog from './Blog';
 
 const blog = {
@@ -12,7 +13,11 @@ const blog = {
 };
 
 test('renders title and author but not url or likes', () => {
-  const { container } = render(<Blog blog={blog} />);
+  const { container } = render(
+    <BrowserRouter>
+      <Blog blog={blog} />
+    </BrowserRouter>
+  );
 
   const basicInfo = container.querySelector('.blog-basic');
   const details = container.querySelector('.blog-details');
@@ -23,7 +28,11 @@ test('renders title and author but not url or likes', () => {
 });
 
 test('url and likes are shown when view button is clicked', async () => {
-  const { container } = render(<Blog blog={blog} />);
+  const { container } = render(
+    <BrowserRouter>
+      <Blog blog={blog} />
+    </BrowserRouter>
+  );
   const user = userEvent.setup();
 
   const button = screen.getByText('view');
@@ -39,7 +48,15 @@ test('like button calls event handler twice when clicked twice', async () => {
   const mockHandler = vi.fn();
   const user = userEvent.setup();
 
-  render(<Blog blog={blog} handleLike={mockHandler} handleDelete={() => {}} />);
+  render(
+    <BrowserRouter>
+      <Blog 
+        blog={blog} 
+        handleLike={mockHandler} 
+        handleDelete={() => {}} 
+      />
+    </BrowserRouter>
+  );
 
   const viewButton = screen.getByText('view');
   await user.click(viewButton);
