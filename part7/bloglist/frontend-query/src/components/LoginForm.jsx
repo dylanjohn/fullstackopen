@@ -12,8 +12,8 @@ const LoginForm = ({
     <div className="w-full max-w-md mx-auto rounded-xl border border-gray-200 shadow-sm p-6 space-y-4 bg-white">
       <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold">Login to application</h1>
-          <p className="text-gray-500 mt-1">Sign in to continue to your blog</p>
+          <h1 className="text-2xl font-bold">Welcome back!</h1>
+          <p className="text-gray-500 mt-1">Log in to continue to your blog</p>
         </div>
 
         <div className="flex flex-col gap-2 [&>input]:mb-3">

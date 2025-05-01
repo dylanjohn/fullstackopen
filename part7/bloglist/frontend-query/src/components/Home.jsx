@@ -5,7 +5,7 @@ import Togglable from './Togglable';
 const Home = ({ user, blogFormRef, addBlog, handleLike, handleDelete }) => {
   return (
     <>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+      <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
 

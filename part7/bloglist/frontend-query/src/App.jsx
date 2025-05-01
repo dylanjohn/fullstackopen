@@ -6,6 +6,7 @@ import { Book, Users, LogOut } from 'lucide-react';
 import LoginForm from './components/LoginForm';
 import Home from './components/Home';
 import Notification from './components/Notification';
+import Navigation from './components/Navigation';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import UsersList from './components/UsersList';
@@ -147,39 +148,11 @@ const App = () => {
             <h1 className="text-3xl font-bold mb-2">Blogs</h1>
             <Notification />
 
-            <div className="mt-6 mb-6">
-              <nav className="flex flex-wrap items-center justify-between">
-                <div className="flex items-center space-x-6">
-                  <Link
-                    to="/"
-                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 py-2"
-                  >
-                    <Book size={18} />
-                    <span>Blogs</span>
-                  </Link>
-                  <Link
-                    to="/users"
-                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 py-2"
-                  >
-                    <Users size={18} />
-                    <span>Users</span>
-                  </Link>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-500">{user.name} logged in</span>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setNotification('Logged out successfully', 'info');
-                    }}
-                    className="flex items-center space-x-1 bg-black hover:bg-gray-800 text-white px-3 py-1 rounded-md text-sm"
-                  >
-                    <LogOut size={16} />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              </nav>
-            </div>
+            <Navigation 
+              user={user} 
+              logout={logout} 
+              setNotification={setNotification} 
+            />
 
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
               <Routes>
