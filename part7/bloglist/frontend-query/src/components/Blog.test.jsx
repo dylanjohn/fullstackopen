@@ -50,11 +50,7 @@ test('like button calls event handler twice when clicked twice', async () => {
 
   render(
     <BrowserRouter>
-      <Blog 
-        blog={blog} 
-        handleLike={mockHandler} 
-        handleDelete={() => {}} 
-      />
+      <Blog blog={blog} handleLike={mockHandler} handleDelete={() => {}} />
     </BrowserRouter>
   );
 

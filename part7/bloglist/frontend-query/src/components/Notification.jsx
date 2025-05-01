@@ -23,12 +23,8 @@ const Notification = () => {
 
   return (
     <div className={`notification notification-${notification.type}`}>
-      <div className="notification-icon">
-        {getIcon()}
-      </div>
-      <div className="notification-message">
-        {notification.message}
-      </div>
+      <div className="notification-icon">{getIcon()}</div>
+      <div className="notification-message">{notification.message}</div>
     </div>
   );
 };

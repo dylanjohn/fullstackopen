@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link, useNavigate} from 'react-router';
+import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery } from 'react-query';
 import blogService from '../services/blogs';
 
@@ -10,9 +10,8 @@ const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
 
   const result = useQuery({
     queryKey: ['blogs'],
-    queryFn: blogService.getAll
+    queryFn: blogService.getAll,
   });
-  
 
   const handleCommentSubmit = (event) => {
     event.preventDefault();
@@ -30,7 +29,7 @@ const BlogDetail = ({ handleLike, handleDelete, handleComment, user }) => {
     return <div>Error loading blogs: {result.error.message}</div>;
   }
 
-  const blog = result.data.find(b => b.id === id);
+  const blog = result.data.find((b) => b.id === id);
 
   if (!blog) {
     return (

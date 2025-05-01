@@ -4,10 +4,10 @@ import userService from '../services/users';
 
 const UserDetail = () => {
   const { id } = useParams();
-  
+
   const result = useQuery({
     queryKey: ['users'],
-    queryFn: userService.getAll
+    queryFn: userService.getAll,
   });
 
   if (result.isLoading) {
@@ -18,7 +18,7 @@ const UserDetail = () => {
     return <div>Error loading users: {result.error.message}</div>;
   }
 
-  const user = result.data.find(u => u.id === id);
+  const user = result.data.find((u) => u.id === id);
 
   if (!user) {
     return (
@@ -34,10 +34,10 @@ const UserDetail = () => {
       <h2>{user.name}</h2>
 
       <h3>added blogs</h3>
-      
+
       {user.blogs && user.blogs.length > 0 ? (
         <ul>
-          {user.blogs.map(blog => (
+          {user.blogs.map((blog) => (
             <li key={blog.id}>
               <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
             </li>
@@ -46,7 +46,7 @@ const UserDetail = () => {
       ) : (
         <p>No blogs added yet</p>
       )}
-      
+
       <div>
         <Link to="/users">Back</Link>
       </div>

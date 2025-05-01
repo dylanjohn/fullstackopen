@@ -6,13 +6,13 @@ const BlogsList = ({ user, handleLike, handleDelete }) => {
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
-    retry: 1
+    retry: 1,
   });
 
   if (result.isLoading) {
     return <div>Loading blogs...</div>;
   }
-  
+
   if (result.isError) {
     return <div>Error loading blogs: {result.error.message}</div>;
   }
