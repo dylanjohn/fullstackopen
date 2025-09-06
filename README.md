@@ -1,5 +1,5 @@
 # Full Stack Open
-Submissions for the University of Helsinki [Full Stack open](https://fullstackopen.com) course.
+Submissions for the University of Helsinki [Full Stack Open](https://fullstackopen.com) course.
 
 ## Parts
 - [x] Part 0 - Fundamentals of Web apps
